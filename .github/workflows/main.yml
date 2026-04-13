@@ -1,0 +1,38 @@
+on:
+  push:
+    branches: [ main ]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Install dependencies
+        run: |
+          pip install flet
+
+      - name: Set up Java
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'zulu'
+          java-version: '17'
+
+      - name: Setup Android SDK
+        uses: android-actions/setup-android@v3
+
+      - name: Build APK
+        run: |
+          # Флаг --yes критически важен для автоматической установки Flutter SDK
+          flet build apk --yes
+
+      - name: Upload APK
+        uses: actions/upload-artifact@v4
+        with:
+          name: MebelApp-Final
+          path: build/apk/*.apk
